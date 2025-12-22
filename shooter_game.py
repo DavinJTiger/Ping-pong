@@ -1,28 +1,20 @@
 from pygame import *
-from random import randint
-from time import time as timer
 
-window = display.set_mode((700, 500))
+background = transform.scale(image.load("galaxy.jpg"), (600, 500))
+
+window = display.set_mode((600, 500))
 display.set_caption("Shoting")
-background = transform.scale(image.load("galaxy.jpg"), (700, 500))
 game = True
 
-mixer.init()
-mixer.music.load("space.ogg")
-mixer.music.play()
-fire_sound = mixer.Sound("fire.ogg")
-
+back = (200, 244, 255)
+window.fill(back)
 font.init()
 font2 = font.SysFont("Arial", 36)
 font1 = font.SysFont("Arial", 80)
 
 clock = time.Clock()
-x1 = 100
-y1 = 300
-x2 = 300
-y2 = 300
 speed = 10
-win_width = 700
+win_width = 60
 win_height = 500
 lost = 0
 score = 0
@@ -35,10 +27,8 @@ rel_time = False
 
 
 
-img_hero = "rocket.png"
-img_enemy = "ufo.png"
-img_bullet = "bullet.png"
-img_ast = "asteroid.png"
+img_racket = "racket.png"
+img_ball = "tenis_ball.png"
 
 class GameSprite(sprite.Sprite):
     def __init__ (self, player_image, player_x, player_y, size_x, size_y, player_speed):
@@ -162,5 +152,7 @@ while game:
     display.update()    
     clock.tick(60)
     
+
+
 
 
