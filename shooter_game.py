@@ -12,6 +12,8 @@ font.init()
 font2 = font.SysFont("Arial", 36)
 font1 = font.SysFont("Arial", 80)
 
+speed_x = 3
+speed_y = 3
 clock = time.Clock()
 speed = 10
 win_width = 60
@@ -41,19 +43,24 @@ class GameSprite(sprite.Sprite):
     def reset(self):
         window.blit(self.image, (self.rect.x, self.rect.y))
 
-bullets = sprite.Group()
-
 class Player(GameSprite):
-    def update(self):
+    def update_r(self):
         keys = key.get_pressed()
-        if keys[K_LEFT] and self.rect.x > 5:
-            self.rect.x -= self.speed
-        if keys[K_RIGHT] and self.rect.x < win_width - 80:
-            self.rect.x += self.speed
+        if keys[K_UP] and self.rect.y > 5:
+            self.rect.y -= self.speed
+        if keys[K_DOWN] and self.rect.y < win_height - 80:
+            self.rect.y += self.speed
+    def update_l(self):
+        keys = key.get_pressed()
+        if keys[K_w] and self.rect.y > 5:
+            self.rect.y -= self.speed
+        if keys[K_s] and self.rect.y < win_height - 80:   
+            self.rect.y += self.speed
 
-    def fire(self):
-        bullet = Bullet(img_bullet, self.rect.centerx, self.rect.top, 15, 20, -15)
-        bullets.add(bullet)
+racket1 = Player(img_racket, 30, 200, 4, 50, 150)
+racket2 = Player(img_racket, 520, 200, 4, 50, 150)
+ball = GameSprite(img_ball, 200, 200, 4, 50, 50)
+
 
 class Enemy(GameSprite):
     def update(self):
@@ -70,21 +77,7 @@ class Bullet(GameSprite):
         if self.rect.y < 0:
             self.kill()
 
-
-asteoroids = sprite.Group()
-for i in range(1, 3):
-    asteroid = Enemy(img_ast, randint(30, win_width - 30), -40, 80, 50, randint(1,7))
-    asteoroids.add(asteroid)
-
-monsters = sprite.Group()
-for i in range(1, 6):
-    monster = Enemy(img_enemy, randint(80, win_width - 80), -40, 80, 50, randint(1, 5))
-    monsters.add(monster)
-
-
 finish = False
-ship = Player(img_hero, 5, win_height - 100, 80, 100, 10)
-
 
 font.init()
 font = font.Font(None, 70)
@@ -94,65 +87,13 @@ while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
-        if e.type == MOUSEBUTTONDOWN:
-            if e.button == 1:
-                if num_fire < 5 and rel_time == False:
-                    num_fire = num_fire + 1
-                    fire_sound.play()
-                    ship.fire()
-                if num_fire >= 5 and rel_time == False:
-                    last_time = timer()
-                    rel_time = True
 
     if finish != True:
         window.blit(background, (0, 0))
-        ship.update()
-        monsters.update()
-        bullets.update()
-        asteroid.update()
-        
-        text = font2.render("Score: " + str(score), 1, (255, 255, 255))
-        window.blit(text, (10, 20))
-        text_lost = font2.render("Lost: " + str(lost), 1, (255, 255, 255))
-        window.blit(text_lost, (10, 50))
-        text_life = font1.render(str(life), 1, life_color)
-        window.blit(text_life, (650, 10))
-        if rel_time == True:
-            now_time = timer()
-            if now_time - last_time < 3: #before 3 seconds are over, display reload message
-                reload = font2.render('Wait, reload...', 1, (150, 0, 0))
-                window.blit(reload, (260, 460))
-            else:
-                num_fire = 0   #set the bullets counter to zero               
-                rel_time = False #reset the reload flag
-        ship.reset()
-        monsters.draw(window)
-        bullets.draw(window)
-        asteoroids.draw(window)
-
-        collide = sprite.groupcollide(monsters, bullets, True, True)
-        for c in collide:
-            score += 1
-            monster = Enemy(img_enemy, randint(80, win_width - 80), -40, 80, 50, randint(1, 5))
-            monsters.add(monster)
-
-        if score == max_win:
-            finish = True
-            window.blit(win, (275, 250))
-
-        if sprite.spritecollide(ship, monsters, False) or sprite.spritecollide(ship, asteoroids, False):
-            sprite.spritecollide(ship, monsters, True)
-            sprite.spritecollide(ship, asteoroids, True)
-            life = life - 1
-        if life == 0 or lost >= max_lost:
-            finish = True
-            window.blit(lose, (275, 250))
 
 
     display.update()    
     clock.tick(60)
     
-
-
 
 
